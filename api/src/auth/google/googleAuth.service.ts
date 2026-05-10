@@ -26,11 +26,14 @@ export class GoogleAuthService {
   async getTokens(code: string, userId: string) {
     const client = this.getOAuthClient();
     const { tokens } = await client.getToken(code);
+    const expiryDate = tokens.expiry_date
+      ? new Date(tokens.expiry_date).toISOString()
+      : null;
     return {
       userId,
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
-      expiryDate: tokens.expiry_date,
+      expiryDate,
     };
   }
 }
