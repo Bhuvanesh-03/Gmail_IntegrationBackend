@@ -10,7 +10,27 @@ export class GoogleAuthService {
       process.env.GOOGLE_REDIRECT_URI, // where Google sends the user after login
     );
   }
-  connectGoogle() {
-    return 'Connection success!';
+  getAuthUrl(userId: string): string {
+    const client = this.getOAuthClient();
+    return client.generateAuthUrl({
+      access_type: 'offline',
+      prompt: 'consent',
+      state: userId, // tracks which user is connecting
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/gmail.send',
+        'https://www.googleapis.com/auth/gmail.readonly',
+      ],
+    });
+  }
+  async getTokens(code: string, userId: string) {
+    const client = this.getOAuthClient();
+    const { tokens } = await client.getToken(code);
+    return {
+      userId,
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiryDate: tokens.expiry_date,
+    };
   }
 }
