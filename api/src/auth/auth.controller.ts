@@ -24,6 +24,10 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     const tokens = await this.authService.handleGoogleCallback(code, userId);
-    res.json({ success: true, tokens });
+    res.json({
+      success: true,
+      tokens,
+      message: 'Gmail connected successfully!',
+    });
   }
 }
