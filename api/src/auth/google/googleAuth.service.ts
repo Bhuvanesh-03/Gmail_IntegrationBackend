@@ -36,4 +36,23 @@ export class GoogleAuthService {
       expiryDate,
     };
   }
+  async getUserProfileInfo(userId: string) {
+    const client = this.getOAuthClient();
+    console.log('getUserProfileInfo');
+    const accessToken = '';
+    client.setCredentials({ access_token: accessToken });
+
+    // Create a gmail instance using the authenticated client
+    const gmail = google.gmail({ version: 'v1', auth: client });
+
+    // Make the callout to Gmail API to get the profile
+    const { data } = await gmail.users.getProfile({ userId: 'me' });
+    // 'me' means "the currently authenticated user"
+    // Google knows who "me" is because of the accessToken we set
+    return {
+      email: data.emailAddress, // their Gmail address
+      totalMessages: data.messagesTotal, // total emails in their inbox
+      threadCount: data.threadsTotal, // total threads
+    };
+  }
 }
