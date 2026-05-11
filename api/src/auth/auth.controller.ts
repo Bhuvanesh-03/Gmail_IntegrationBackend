@@ -23,11 +23,28 @@ export class AuthController {
     @Query('state') userId: string,
     @Res() res: Response,
   ): Promise<void> {
-    const tokens = await this.authService.handleGoogleCallback(code, userId);
-    res.json({
-      success: true,
-      tokens,
-      message: 'Gmail connected successfully!',
-    });
+    try {
+      const tokens = await this.authService.handleGoogleCallback(code, userId);
+      res.json({
+        success: true,
+        tokens,
+        message: 'Gmail connected successfully!',
+      });
+    } catch (error: unknown) {
+      console.log('Google callback error:', error); // 👈 this will show in terminal
+      const message =
+        error instanceof Error ? error.message : 'Something went wrong';
+      res.json({ success: false, message });
+    }
+  }
+
+  @Get('authStatus')
+  async returnAuthStatus(
+    @Query('userId') userId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    console.log('returnAuthStatus');
+    const profile = await this.authService.checkAuthStatus(userId);
+    res.json({ success: true, profile });
   }
 }

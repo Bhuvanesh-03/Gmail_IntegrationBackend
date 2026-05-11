@@ -12,4 +12,9 @@ export class AuthService {
   async handleGoogleCallback(code: string, userId: string) {
     return this.googleAuthService.getTokens(code, userId);
   }
+
+  async checkAuthStatus(userId: string) {
+    console.log(userId);
+    return await this.googleAuthService.getUserProfileInfo(userId);
+  }
 }
