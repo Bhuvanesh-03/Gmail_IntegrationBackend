@@ -15,6 +15,23 @@ export class AuthService {
 
   async checkAuthStatus(userId: string) {
     console.log(userId);
-    return await this.googleAuthService.getUserProfileInfo(userId);
+    const refreshed = await this.getNewAccessToken(userId);
+    const accessToken = refreshed?.credentials?.access_token ?? '';
+    return await this.googleAuthService.getUserProfileInfo(userId, accessToken);
+  }
+  getNewAccessToken(userId: string) {
+    const { refreshToken } = this.getUserDetails(userId); //parse the user details to get the access token
+    console.log('refreshToken', refreshToken);
+    return this.googleAuthService.refreshAccessToken(refreshToken);
+  }
+  getUserDetails(userId: string) {
+    return {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken', //this is the refresh token for the user-> get this from db
+      expiryDate: 'expiryDate',
+      userEmail: 'userEmail',
+      userId: userId,
+      userName: 'userName',
+    }; //return the user details as a object
   }
 }
