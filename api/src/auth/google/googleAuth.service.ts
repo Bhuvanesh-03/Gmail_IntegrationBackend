@@ -36,17 +36,17 @@ export class GoogleAuthService {
       expiryDate,
     };
   }
-  async getUserProfileInfo(userId: string) {
+  async getUserProfileInfo(userId: string, newAccessToken: string) {
     const client = this.getOAuthClient();
     console.log('getUserProfileInfo');
-    const accessToken = '';
+    const accessToken = newAccessToken || '';
     client.setCredentials({ access_token: accessToken });
 
     // Create a gmail instance using the authenticated client
     const gmail = google.gmail({ version: 'v1', auth: client });
 
     // Make the callout to Gmail API to get the profile
-    const { data } = await gmail.users.getProfile({ userId: 'me' });
+    const { data } = await gmail.users.getProfile({ userId: userId });
     // 'me' means "the currently authenticated user"
     // Google knows who "me" is because of the accessToken we set
     return {
@@ -54,5 +54,12 @@ export class GoogleAuthService {
       totalMessages: data.messagesTotal, // total emails in their inbox
       threadCount: data.threadsTotal, // total threads
     };
+  }
+  async refreshAccessToken(refreshToken: string) {
+    const clinet = this.getOAuthClient();
+    clinet.setCredentials({
+      refresh_token: refreshToken,
+    });
+    return await clinet.refreshAccessToken();
   }
 }
