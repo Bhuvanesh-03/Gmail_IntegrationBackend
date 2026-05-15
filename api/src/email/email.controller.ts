@@ -1,11 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { EmailService } from './email.service';
 
-@Controller('email')
+@Controller('google/email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
   @Get('send')
-  sendEmail() {
-    return this.emailService.sendEmail();
+  async sendEmail(@Query('userId') userId: string) {
+    return this.emailService.sendEmail(userId);
   }
 }
